@@ -11,17 +11,7 @@ export const FullScreenLoader = () => (
 );
 
 export const InlineLoader = ({ size = 'sm', color = 'white' }: { size?: 'sm' | 'md' | 'lg', color?: 'white' | 'blue' }) => {
-    const sizeClasses = {
-        sm: 'h-4 w-4 border-2',
-        md: 'h-6 w-6 border-2',
-        lg: 'h-8 w-8 border-3',
-    };
-    const colorClasses = {
-        white: 'border-white',
-        blue: 'border-blue-500',
-    }
-    // Use border-color for loader, border-b-transparent creates the spin effect
-    return (
-        <div className={`animate-spin rounded-full border-b-transparent ${sizeClasses[size]} ${colorClasses[color]}`}></div>
-    );
+    const sizeClasses = { sm: 'h-4 w-4 border-2', md: 'h-6 w-6 border-2', lg: 'h-8 w-8 border-3' };
+    const colorClasses = { white: 'border-white', blue: 'border-blue-500' }
+    return ( <div className={`animate-spin rounded-full border-b-transparent ${sizeClasses[size]} ${colorClasses[color]}`}></div> );
 };
