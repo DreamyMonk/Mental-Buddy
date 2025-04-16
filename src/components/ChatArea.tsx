@@ -88,7 +88,7 @@ export default function ChatArea({ activeChat, onToggleSidebar }: ChatAreaProps)
 
     if (file) {
         if (isSecret) {
-            toast(`File attachments ignored in secret chats.`, { icon: '🤫' });
+            toast("File attachments ignored in secret chats.", { icon: '🤫' });
         } else {
             toast.error("File upload not yet implemented.");
         }
