@@ -1,38 +1,32 @@
 // src/lib/utils.ts
+import { Timestamp } from 'firebase/firestore';
 
 /**
  * Generates a concise title from the first user message.
- * @param firstMessageText The text content of the first user message.
- * @returns A string suitable for a chat title.
  */
 export const generateChatTitle = (firstMessageText: string): string => {
     if (!firstMessageText || typeof firstMessageText !== 'string') {
         return 'New Chat';
     }
-    const words = firstMessageText.trim().split(/\s+/); // Split by whitespace
-    // Take first few words, ensure not too long
+    const words = firstMessageText.trim().split(/\s+/);
     const title = words.slice(0, 5).join(' ');
-    return title.length > 35 ? title.substring(0, 32) + '...' : title; // Max length check
+    return title.length > 35 ? title.substring(0, 32) + '...' : title || 'Chat'; // Ensure fallback if empty after processing
 };
 
 /**
  * Formats a Firestore Timestamp or Date object into a readable time string.
- * @param timestamp Firestore Timestamp object or Date object.
- * @returns Formatted time string (e.g., "10:30 AM") or "..." if invalid.
  */
-export const formatTimestamp = (timestamp: any): string => {
+export const formatTimestamp = (timestamp: Timestamp | Date | undefined | null): string => {
     let date: Date | null = null;
     if (!timestamp) return "...";
 
-    if (typeof timestamp.toDate === 'function') {
-      // Firestore Timestamp object
+    if (timestamp instanceof Timestamp) {
       date = timestamp.toDate();
     } else if (timestamp instanceof Date) {
-      // Standard Date object
       date = timestamp;
     }
 
-    if (!date || isNaN(date.getTime())) return "..."; // Check for invalid date
+    if (!date || isNaN(date.getTime())) return "...";
 
-    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true }); // Added hour12
 };

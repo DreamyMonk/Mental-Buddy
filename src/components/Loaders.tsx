@@ -3,7 +3,6 @@ import React from 'react';
 
 export const FullScreenLoader = () => (
   <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-    {/* Enhanced spinner */}
     <div className="relative flex items-center justify-center w-20 h-20">
         <div className="absolute w-full h-full border-4 border-gray-700 rounded-full"></div>
         <div className="absolute w-full h-full border-t-4 border-blue-500 rounded-full animate-spin"></div>
@@ -21,6 +20,7 @@ export const InlineLoader = ({ size = 'sm', color = 'white' }: { size?: 'sm' | '
         white: 'border-white',
         blue: 'border-blue-500',
     }
+    // Use border-color for loader, border-b-transparent creates the spin effect
     return (
         <div className={`animate-spin rounded-full border-b-transparent ${sizeClasses[size]} ${colorClasses[color]}`}></div>
     );

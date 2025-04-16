@@ -14,6 +14,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Mental Buddy - AI Companion',
   description: 'Your compassionate AI companion for mental well-being support.',
+  // Add more metadata as needed (icons, etc.)
 };
 
 export default function RootLayout({
@@ -22,15 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    // Ensure no extra spaces or newlines around the <html> tag itself
     <html lang="en" className={inter.variable}>
-      {/*
-        NOTE: The <head> tag is largely managed by Next.js Metadata.
-        Do NOT manually add a <head> tag here unless you have a specific reason
-        and understand the implications with Next.js Metadata handling.
-      */}
-      {/* Ensure no extra spaces or newlines BEFORE the <body> tag */}
-      <body className={`bg-gray-900 antialiased`}>
+      <body className={`bg-gray-900 antialiased`}> {/* Base styles applied via globals.css */}
         <AuthProvider>
            {children}
            <Toaster
@@ -46,22 +40,15 @@ export default function RootLayout({
                 },
                 success: {
                   duration: 3000,
-                  iconTheme: {
-                    primary: '#10B981', // green-500
-                    secondary: 'white',
-                  },
+                  iconTheme: { primary: '#10B981', secondary: 'white' },
                 },
                 error: {
-                  iconTheme: {
-                    primary: '#EF4444', // red-500
-                    secondary: 'white',
-                  },
+                  iconTheme: { primary: '#EF4444', secondary: 'white' },
                 },
              }}
             />
         </AuthProvider>
       </body>
-      {/* Ensure no extra spaces or newlines AFTER the <body> tag */}
     </html>
   );
 }

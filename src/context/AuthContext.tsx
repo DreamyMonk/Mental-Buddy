@@ -4,29 +4,29 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { FullScreenLoader } from '@/components/Loaders'; // Ensure this path is correct
+import { FullScreenLoader } from '@/components/Loaders';
 
 interface AuthContextProps {
   user: User | null;
-  loading: boolean; // Indicates initial auth state check
+  loading: boolean; // Initial auth state check
 }
 
 const AuthContext = createContext<AuthContextProps>({ user: null, loading: true });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // Start as true
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("AuthContext: Setting up listener...");
+    console.log("AuthContext: Listener setup.");
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log("AuthContext: State changed. User:", currentUser?.uid ?? 'null');
+      // console.log("AuthContext: State changed. User:", currentUser?.uid ?? 'null');
       setUser(currentUser);
-      setLoading(false); // Done with initial check
+      setLoading(false);
     });
 
     return () => {
-        console.log("AuthContext: Cleaning up listener.");
+        console.log("AuthContext: Listener cleanup.");
         unsubscribe();
     }
   }, []);
@@ -42,4 +42,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = (): AuthContextProps => useContext(AuthContext); // Added return type

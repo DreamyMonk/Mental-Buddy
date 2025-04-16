@@ -18,12 +18,14 @@ async function ensureDirExists(dirPath: string) {
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const file = formData.get('file') as File | null;
-
-    if (!file) {
-      return NextResponse.json({ error: "No file provided." }, { status: 400 });
-    }
+    // ... (formData logic) ...
+  } catch (error: unknown) { // <--- Change any to unknown
+    console.error("Upload error:", error);
+    // Type check before accessing properties
+    const message = error instanceof Error ? error.message : 'File upload failed';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
 
     // --- Basic Validation (Example) ---
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'text/markdown', 'text/csv'];
