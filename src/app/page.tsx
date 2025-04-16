@@ -1,19 +1,24 @@
 // src/app/page.tsx
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+// Remove React import if not explicitly needed elsewhere in this file (Next.js often handles it implicitly)
+// import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react'; // Removed useRef
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Sidebar from '@/components/Sidebar';
 import ChatArea from '@/components/ChatArea';
 import { Chat } from '@/types';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp, query, orderBy, updateDoc, doc, DocumentData } from 'firebase/firestore'; // Import DocumentData
+// Removed unused 'updateDoc', 'doc' from firestore import
+import { collection, addDoc, serverTimestamp, query, orderBy, DocumentData, QuerySnapshot } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import toast from 'react-hot-toast';
 import { FullScreenLoader } from '@/components/Loaders';
-import { generateChatTitle } from '@/lib/utils';
-import { FirebaseError } from 'firebase/app'; // Import FirebaseError
+// Removed unused 'generateChatTitle' import
+// import { generateChatTitle } from '@/lib/utils';
+import { FirebaseError } from 'firebase/app';
+import type { QuerySnapshot as FirebaseQuerySnapshot } from 'firebase/firestore'; // Use alias if QuerySnapshot name conflicts
 
 
 export default function ChatPage() {
@@ -31,7 +36,6 @@ export default function ChatPage() {
         console.log("Chat Page: No user, redirecting to /login");
         router.push('/login');
       } else {
-        // console.log("Chat Page: User authenticated:", user.uid);
         if (window.innerWidth < 768) setSidebarOpen(false);
       }
     }
@@ -40,23 +44,20 @@ export default function ChatPage() {
   // --- Firestore Queries ---
   const chatsRef = user ? collection(db, 'users', user.uid, 'chats') : null;
   const chatsQuery = chatsRef ? query(chatsRef, orderBy('lastUpdatedAt', 'desc')) : null;
-  // Explicitly type the error from the hook
-  const [chatsSnapshot, chatsLoading, chatsError]: [QuerySnapshot<DocumentData> | undefined, boolean, FirebaseError | undefined] = useCollection(chatsQuery);
+  const [chatsSnapshot, chatsLoading, chatsError]: [FirebaseQuerySnapshot<DocumentData> | undefined, boolean, FirebaseError | undefined] = useCollection(chatsQuery);
 
 
-  // Use type assertion for safety when mapping
   const chats: Chat[] | undefined = chatsSnapshot?.docs.map(docSnapshot => ({
     id: docSnapshot.id,
-    ...(docSnapshot.data() as Omit<Chat, 'id'>), // Assert data structure
+    ...(docSnapshot.data() as Omit<Chat, 'id'>),
   }));
 
   const activeChat = chats?.find(chat => chat.id === activeChatId);
 
   // --- Effects ---
-  useEffect(() => {
+   useEffect(() => {
     if (user && !chatsLoading && chats) {
         if (!activeChatId && chats.length > 0) {
-            // console.log("Chat Page: Selecting first available chat:", chats[0].id);
             setActiveChatId(chats[0].id);
         }
     }
@@ -81,10 +82,10 @@ export default function ChatPage() {
       setActiveChatId(docRef.id);
       toast.success(`New ${isSecretMode ? 'secret ' : ''}chat started!`, { id: toastId });
       if (window.innerWidth < 768) setSidebarOpen(false);
-    } catch (error: unknown) { // Use unknown
+    } catch (error: unknown) {
       console.error("Error creating new chat:", error);
        const message = error instanceof Error ? error.message : "Unknown error";
-      toast.error(`Failed to create chat: ${message}`, { id: toastId }); // Show error on same toast
+      toast.error(`Failed to create chat: ${message}`, { id: toastId });
     }
   }, [user, isSecretMode]);
 
@@ -106,7 +107,7 @@ export default function ChatPage() {
 
   // --- Render Logic ---
   if (authLoading) return <FullScreenLoader />;
-  if (!user) return null; // Redirect happening
+  if (!user) return null;
   if (chatsError) {
     return <div className="text-red-400 p-6 text-center">Error loading chat list: {chatsError.message}. Please try refreshing.</div>;
   }
@@ -118,20 +119,17 @@ export default function ChatPage() {
         activeChatId={activeChatId}
         onNewChat={handleNewChat}
         onSelectChat={handleSelectChat}
-        isLoading={chatsLoading && !chatsSnapshot} // More precise loading state
+        isLoading={chatsLoading && !chatsSnapshot}
         isSecretMode={isSecretMode}
         onToggleSecretMode={handleToggleSecretMode}
         isOpen={sidebarOpen}
         onToggleSidebar={handleToggleSidebar}
       />
       <ChatArea
-        key={activeChatId || 'no-chat-selected'} // Ensure key changes when no chat selected
+        key={activeChatId || 'no-chat-selected'}
         activeChat={activeChat}
         onToggleSidebar={handleToggleSidebar}
       />
     </div>
   );
 }
-
-// Added type import
-import type { QuerySnapshot } from 'firebase/firestore';
